@@ -33,7 +33,7 @@ async function run() {
 
     await client.connect();
 
-    // GET
+    // -----GET-----
     //all jobs
     app.get("/allJobs", async (req, res) => {
       const result = await jobsCollection
@@ -56,7 +56,7 @@ async function run() {
       res.send(result);
     });
 
-    // POST
+    //---- POST----
     // add a job
     app.post("/allJobs", async (req, res) => {
       const data = req.body;
@@ -64,8 +64,8 @@ async function run() {
       res.send(result);
     });
 
-    // PUT
-    // update a Job
+    //---- PUT----
+    // update a job
     app.put("/alljobs/:id", async (req, res) => {
       const { id } = req.params;
       const data = req.body;
@@ -75,13 +75,19 @@ async function run() {
         $set: data,
       };
       const result = await jobsCollection.updateOne(filter, update);
-      res.send({
-        success: true,
-        result,
-      });
+      res.send(result);
     });
 
-    // DELETE
+    //---- DELETE----
+    // delete a job
+    app.delete("/alljobs/:id", async (req, res) => {
+      const { id } = req.params;
+      const objectId = new ObjectId(id);
+      const filter = { _id: objectId };
+      const result = await jobsCollection.deleteOne(filter);
+
+      res.send(result);
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log(
