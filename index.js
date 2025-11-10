@@ -32,25 +32,44 @@ async function run() {
     const jobsCollection = db.collection("jobs");
 
     await client.connect();
+
     // GET
+    //all jobs
     app.get("/allJobs", async (req, res) => {
-      const result = await jobsCollection.find().toArray();
+      const result = await jobsCollection
+        .find()
+        .sort({ postedDate: -1 })
+        .toArray();
       res.send(result);
     });
-
+    // single job
     app.get("/alljobs/:id", async (req, res) => {
       const { id } = req.params;
       const objectId = new ObjectId(id);
       const result = await jobsCollection.findOne({ _id: objectId });
       res.send(result);
     });
+    // my added jobs
+    app.get("/myAddedJobs", async (req, res) => {
+      const email = req.query.email;
+      const result = await jobsCollection.find({ userEmail: email }).toArray();
+      res.send(result);
+    });
 
     // POST
+    // add a job
     app.post("/allJobs", async (req, res) => {
       const data = req.body;
       const result = await jobsCollection.insertOne(data);
       res.send(result);
     });
+
+    // UPDATE
+    app.get("/updateJob/:id", async (req, res) => {
+      
+    });
+
+    // DELETE
 
     await client.db("admin").command({ ping: 1 });
     console.log(
