@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 3000;
@@ -12,7 +13,7 @@ app.get("/", (req, res) => {
   res.send("Server running fine");
 });
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.0rghqsk.mongodb.net/?appName=Cluster0`;
 
@@ -32,8 +33,22 @@ async function run() {
 
     await client.connect();
     // GET
-    app.get("/all-jobs", async (req, res) => {
+    app.get("/allJobs", async (req, res) => {
       const result = await jobsCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.get("/alljobs/:id", async (req, res) => {
+      const { id } = req.params;
+      const objectId = new ObjectId(id);
+      const result = await jobsCollection.findOne({ _id: objectId });
+      res.send(result);
+    });
+
+    // POST
+    app.post("/allJobs", async (req, res) => {
+      const data = req.body;
+      const result = await jobsCollection.insertOne(data);
       res.send(result);
     });
 
