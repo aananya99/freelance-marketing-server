@@ -30,6 +30,7 @@ async function run() {
   try {
     const db = client.db("jobs-db");
     const jobsCollection = db.collection("jobs");
+    const acceptedCollection = db.collection("accepted");
 
     await client.connect();
 
@@ -61,6 +62,12 @@ async function run() {
     app.post("/allJobs", async (req, res) => {
       const data = req.body;
       const result = await jobsCollection.insertOne(data);
+      res.send(result);
+    });
+    // accepted task
+    app.post("/my-accepted-tasks", async (req, res) => {
+      const data = req.body;
+      const result = await acceptedCollection.insertOne(data);
       res.send(result);
     });
 
