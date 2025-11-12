@@ -30,7 +30,7 @@ async function run() {
   try {
     const db = client.db("jobs-db");
     const jobsCollection = db.collection("jobs");
-    const acceptedCollection = db.collection("accepted");
+    const acceptedCollection = db.collection("accepted-tasks");
 
     await client.connect();
 
@@ -71,6 +71,13 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/my-accepted-tasks", async (req, res) => {
+      const email = req.query.email;
+      const result = await acceptedCollection
+        .find({ accepted_by: email })
+        .toArray();
+      res.send(result);
+    });
     //---- PUT----
     // update a job
     app.put("/alljobs/:id", async (req, res) => {
