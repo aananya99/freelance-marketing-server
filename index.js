@@ -67,6 +67,9 @@ async function run() {
     // accepted task
     app.post("/my-accepted-tasks", async (req, res) => {
       const data = req.body;
+      if (data.postedBy === data.accepted_by) {
+        return res.send({ message: "You can't accept your own job." });
+      }
       const result = await acceptedCollection.insertOne(data);
       res.send(result);
     });
@@ -78,13 +81,19 @@ async function run() {
         .toArray();
       res.send(result);
     });
+    app.delete("/my-accepted-tasks/:id", async (req, res) => {
+      const { id } = req.params;
+      const filter = { _id: id };
+      const result = await acceptedCollection.deleteOne(filter);
+      res.send(result);
+    });
+
     //---- PUT----
     // update a job
     app.put("/alljobs/:id", async (req, res) => {
       const { id } = req.params;
       const data = req.body;
-      const objectId = new ObjectId(id);
-      const filter = { _id: objectId };
+      const filter = { _id: new ObjectId(id) };
       const update = {
         $set: data,
       };
